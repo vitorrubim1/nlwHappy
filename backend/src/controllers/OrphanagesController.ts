@@ -23,6 +23,8 @@ export default {
   },
 
   async create(request: Request, response: Response){
+    console.log(request.file);
+
     const {
       //desestruturando as variaveis q vem do form
       name,
@@ -36,6 +38,12 @@ export default {
   
     const orphanageRepository = getRepository(Orphanage); //pegar o model
   
+    const requestImages = request.files as Express.Multer.File[]; //forçando a ser um array
+
+    const images = requestImages.map(image => {
+      return { path: image.filename } //para salvar somente o nome da imagem
+    })
+
     const orphanage = orphanageRepository.create({
       name,
       latitude,
@@ -44,11 +52,10 @@ export default {
       instructions,
       opening_hours,
       open_on_weekends,
+      images
     }); //criando o orfanato apenas
   
     await orphanageRepository.save(orphanage); //agora salvo no banco
-  
     return response.status(201).json(orphanage); //retornando o orfanato, com 201: sucesso na criação
-  
   }
 };
