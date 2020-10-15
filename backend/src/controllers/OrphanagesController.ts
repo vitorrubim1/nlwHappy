@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm"; //as alterações, criações precisa passar por aq
 
 import Orphanage from "../models/Orphanage";
+import orphanageView from "../views/orphanage_view";
 
 export default {
   async index(request: Request, response: Response) {
     const orphanageRepository = getRepository(Orphanage); //pegar o model
 
-    const orphanages = await orphanageRepository.find(); //buscando tudo
+    const orphanages = await orphanageRepository.find({
+      relations: ["images"], //para trazer as imagens
+    }); //buscando tudo
 
-    return response.json(orphanages);
+    return response.json(orphanageView.renderMany(orphanages)); //minha view que controla as infomaçoes de retorno
   },
 
   async show(request: Request, response: Response) {
@@ -17,12 +20,14 @@ export default {
     console.log(id);
     const orphanageRepository = getRepository(Orphanage); //pegar o model
 
-    const orphanage = await orphanageRepository.findOneOrFail(id); //buscando um especifico
+    const orphanage = await orphanageRepository.findOneOrFail(id, {
+      relations: ["images"],
+    }); //buscando um especifico
 
-    return response.json(orphanage);
+    return response.json(orphanageView.render(orphanage)); //minha view que controla as infomaçoes de retorno
   },
 
-  async create(request: Request, response: Response){
+  async create(request: Request, response: Response) {
     console.log(request.file);
 
     const {
@@ -35,14 +40,14 @@ export default {
       opening_hours,
       open_on_weekends,
     } = request.body;
-  
+
     const orphanageRepository = getRepository(Orphanage); //pegar o model
-  
+
     const requestImages = request.files as Express.Multer.File[]; //forçando a ser um array
 
-    const images = requestImages.map(image => {
-      return { path: image.filename } //para salvar somente o nome da imagem
-    })
+    const images = requestImages.map((image) => {
+      return { path: image.filename }; //para salvar somente o nome da imagem
+    });
 
     const orphanage = orphanageRepository.create({
       name,
@@ -52,10 +57,10 @@ export default {
       instructions,
       opening_hours,
       open_on_weekends,
-      images
+      images,
     }); //criando o orfanato apenas
-  
+
     await orphanageRepository.save(orphanage); //agora salvo no banco
     return response.status(201).json(orphanage); //retornando o orfanato, com 201: sucesso na criação
-  }
+  },
 };

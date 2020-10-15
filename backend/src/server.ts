@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 
 import "./database/connection"; //startar o banco
 import routes from "./routes";
@@ -7,6 +8,8 @@ const app = express(); //desacoplando o express
 
 app.use(express.json()); //para receber atraves do body
 app.use(routes); //para usar as rotas da aplicação
+
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads"))); //pra renderizar as imagens
 
 //Métodos HTTP: Get, Post, Put, Delete
 /* Parâmetros: 
