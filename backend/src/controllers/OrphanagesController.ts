@@ -4,6 +4,14 @@ import { getRepository } from "typeorm"; //as alterações, criações precisa p
 import Orphanage from "../models/Orphanage";
 
 export default {
+  async index(request: Request, response: Response) {
+    const orphanageRepository = getRepository(Orphanage); //pegar o model
+
+    const orphanages = await orphanageRepository.find(); //buscando tudo
+
+    return response.json(orphanages);
+  },
+
   async create(request: Request, response: Response){
     const {
       //desestruturando as variaveis q vem do form
