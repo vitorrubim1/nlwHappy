@@ -12,6 +12,16 @@ export default {
     return response.json(orphanages);
   },
 
+  async show(request: Request, response: Response) {
+    const { id } = request.params; //id q vem pela url
+    console.log(id);
+    const orphanageRepository = getRepository(Orphanage); //pegar o model
+
+    const orphanage = await orphanageRepository.findOneOrFail(id); //buscando um especifico
+
+    return response.json(orphanage);
+  },
+
   async create(request: Request, response: Response){
     const {
       //desestruturando as variaveis q vem do form
