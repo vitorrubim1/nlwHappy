@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm"; //as alterações, criações precisa passar por aq
+import * as Yup from "yup";
 
 import Orphanage from "../models/Orphanage";
 import orphanageView from "../views/orphanage_view";
@@ -49,7 +50,7 @@ export default {
       return { path: image.filename }; //para salvar somente o nome da imagem
     });
 
-    const orphanage = orphanageRepository.create({
+    const data = {
       name,
       latitude,
       longitude,
@@ -58,7 +59,30 @@ export default {
       opening_hours,
       open_on_weekends,
       images,
-    }); //criando o orfanato apenas
+    };
+
+    //validações
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      latitude: Yup.number().required(),
+      longitude: Yup.number().required(),
+      about: Yup.string().required().max(300),
+      instructions: Yup.string().required(),
+      opening_hours: Yup.string().required(),
+      open_on_weekends: Yup.boolean().required(),
+      images: Yup.array(
+        Yup.object().shape({
+          //formato do objeto
+          path: Yup.string().required(),
+        })
+      ),
+    });
+
+    await schema.validate(data, {
+      abortEarly: false, //para avisar caso haja erro em algum campo
+    });
+
+    const orphanage = orphanageRepository.create(data); //criando o orfanato apenas
 
     await orphanageRepository.save(orphanage); //agora salvo no banco
     return response.status(201).json(orphanage); //retornando o orfanato, com 201: sucesso na criação
