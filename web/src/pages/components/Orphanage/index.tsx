@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { FiClock, FiInfo } from "react-icons/fi";
 import { Map, Marker, TileLayer } from "react-leaflet";
 import { useParams } from "react-router-dom";
@@ -29,17 +29,17 @@ interface OrphanageParams {
 
 export default function Orphanage() {
   const params = useParams<OrphanageParams>();
-  const [orphanage, setOrphanage] = useState<Orphanage>();
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [orphanage, setOrphanage] = React.useState<Orphanage>();
+  const [activeImageIndex, setActiveImageIndex] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     api.get(`/orphanages/${params.id}`).then(({ data }) => {
       setOrphanage(data);
     });
   }, [params.id]);
 
   if (!orphanage) {
-    return <p>Carregando ...</p>;
+    return <p>Carregando...</p>;
   }
 
   return (
