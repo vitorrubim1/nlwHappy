@@ -5,7 +5,7 @@ export default {
     //aq so retorna um
     return {
       id: image.id,
-      url: `http://localhost:3333/uploads/${image.path}`,
+      url: `http://192.168.15.8:3333/uploads/${image.path}`,
     };
   },
 
