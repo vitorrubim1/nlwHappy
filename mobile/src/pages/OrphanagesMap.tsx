@@ -11,7 +11,7 @@ import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
   Callout: Popup
 */
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native"; //useFocusEffect: assim que o usuario sair e voltar pra esta tela e recebe o foco
 
 import mapMark from "../images/map-marker.png"; //O react-native decide o melhor tamanho
 import { RectButton } from "react-native-gesture-handler";
@@ -30,11 +30,11 @@ export default function OrphanagesMap() {
 
   // console.log(orphanages); //para debugar é so ir no dispositivo conectado
 
-  React.useEffect(() => {
+  useFocusEffect(() => {
     api.get("orphanages").then((response) => {
       setOrphanages(response.data);
     });
-  }, []);
+  });
 
   function handleNavigateToOrphanageDetails(id: number) {
     navigation.navigate("OrphanageDetails", { id });
